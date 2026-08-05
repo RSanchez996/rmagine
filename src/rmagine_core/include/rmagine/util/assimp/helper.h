@@ -5,6 +5,7 @@
 #include <vector>
 #include <rmagine/math/types.h>
 #include <rmagine/types/shared_functions.h>
+#include <string>
 
 namespace rmagine
 {
@@ -12,6 +13,10 @@ namespace rmagine
 void get_nodes_with_meshes(
     const aiNode* node, 
     std::vector<const aiNode*>& mesh_nodes);
+
+void validate_triangle_mesh(
+    const aiMesh* mesh,
+    const std::string& backend);
 
 std::vector<const aiNode*> get_nodes_with_meshes(
     const aiNode* node);

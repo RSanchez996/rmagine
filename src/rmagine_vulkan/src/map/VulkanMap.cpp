@@ -1,5 +1,5 @@
 #include "rmagine/map/VulkanMap.hpp"
-
+#include <stdexcept>
 
 
 namespace rmagine
@@ -65,17 +65,29 @@ VulkanMapPtr import_vulkan_map(const std::string& meshfile)
 {
     AssimpIO io;
     // aiProcess_GenNormals does not work!
-    const aiScene* ascene = io.ReadFile(meshfile, 0);
+    //const aiScene* ascene = io.ReadFile(meshfile, 0);
+    const aiScene* ascene = io.ReadFile(meshfile, RMAGINE_ASSIMP_IMPORT_FLAGS);
+
+    // if(!ascene)
+    // {
+    //     std::cerr << io.Importer::GetErrorString() << std::endl;
+    // }
+
+    // if(!ascene->HasMeshes())
+    // {
+    //     std::cerr << "ERROR: file '" << meshfile << "' contains no meshes" << std::endl;
+    // }
 
     if(!ascene)
     {
-        std::cerr << io.Importer::GetErrorString() << std::endl;
+        throw std::runtime_error("[RMagine] Assimp could not load '" + meshfile + "': " + io.Importer::GetErrorString());
     }
 
     if(!ascene->HasMeshes())
     {
-        std::cerr << "ERROR: file '" << meshfile << "' contains no meshes" << std::endl;
+        throw std::runtime_error("[RMagine] File contains no meshes: " + meshfile);
     }
+    
 
     VulkanScenePtr scene = make_vulkan_scene(ascene);
     scene->commit();

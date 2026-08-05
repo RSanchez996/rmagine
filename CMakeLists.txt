@@ -80,7 +80,48 @@ find_package(Eigen3 REQUIRED)
 ####################
 ## ASSIMP: MeshIO ##
 ####################
-find_package(assimp REQUIRED)
+# find_package(assimp REQUIRED)
+option(
+  RMAGINE_USE_BUNDLED_ASSIMP
+  "Build RMagine with the bundled Assimp"
+  ON
+)
+
+if(RMAGINE_USE_BUNDLED_ASSIMP)
+  set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+  set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+  set(ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
+  set(ASSIMP_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+  set(ASSIMP_BUILD_USD_IMPORTER OFF CACHE BOOL "" FORCE)
+  set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
+
+  # Se instala junto con RMagine para que sus targets exportados
+  # puedan encontrar assimp::assimp.
+  set(ASSIMP_INSTALL ON CACHE BOOL "" FORCE)
+
+  # Usar zlib del sistema.
+  set(ASSIMP_BUILD_ZLIB OFF CACHE BOOL "" FORCE)
+
+  # Biblioteca compartida; luego verificaremos qué .so carga RMCL.
+  set(BUILD_SHARED_LIBS ON CACHE BOOL "" FORCE)
+
+  if(NOT EXISTS
+      "${CMAKE_CURRENT_SOURCE_DIR}/third_party/assimp/CMakeLists.txt")
+    message(FATAL_ERROR
+      "Bundled Assimp missing. Run: "
+      "git submodule update --init --recursive")
+  endif()
+
+  add_subdirectory(
+    third_party/assimp
+    ${CMAKE_CURRENT_BINARY_DIR}/third_party/assimp
+  )
+
+  message(STATUS "RMagine: using bundled Assimp 5.4.3")
+else()
+  find_package(assimp 5.3 REQUIRED)
+  message(STATUS "RMagine: using system Assimp")
+endif()
 
 #######################
 ## TBB: Threading ##

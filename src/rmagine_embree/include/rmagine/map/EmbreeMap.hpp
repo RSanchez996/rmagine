@@ -46,6 +46,7 @@
 #include <set>
 #include <unordered_set>
 #include <limits>
+#include <stdexcept>
 
 #include <rmagine/math/types.h>
 #include <rmagine/math/math.h>
@@ -62,6 +63,7 @@
 #include "embree/EmbreeScene.hpp"
 #include "embree/EmbreeMesh.hpp"
 #include "embree/EmbreeInstance.hpp"
+
 
 
 namespace rmagine 
@@ -98,17 +100,29 @@ static EmbreeMapPtr import_embree_map(
     AssimpIO io;
 
     // aiProcess_GenNormals does not work!
-    const aiScene* ascene = io.ReadFile(meshfile, 0);
+    // const aiScene* ascene = io.ReadFile(meshfile, 0);
+    const aiScene* ascene = io.ReadFile(meshfile, RMAGINE_ASSIMP_IMPORT_FLAGS);
+
+    // if(!ascene)
+    // {
+    //     std::cerr << io.Importer::GetErrorString() << std::endl;
+    // }
+
+    // if(!ascene->HasMeshes())
+    // {
+    //     std::cerr << "ERROR: file '" << meshfile << "' contains no meshes" << std::endl;
+    // }
 
     if(!ascene)
     {
-        std::cerr << io.Importer::GetErrorString() << std::endl;
+        throw std::runtime_error("[RMagine] Assimp could not load '" + meshfile + "': " + io.Importer::GetErrorString());
     }
 
     if(!ascene->HasMeshes())
     {
-        std::cerr << "[RMagine - Error] importEmbreeMap() - file '" << meshfile << "' contains no meshes" << std::endl;
+        throw std::runtime_error("[RMagine] File contains no meshes: " + meshfile);
     }
+    
 
     EmbreeScenePtr scene = make_embree_scene(ascene, device);
     scene->freeze();

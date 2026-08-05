@@ -1,4 +1,5 @@
 #include "rmagine/map/vulkan/VulkanMesh.hpp"
+#include <rmagine/util/assimp/helper.h>
 
 namespace rmagine
 {
@@ -103,6 +104,7 @@ VulkanMeshPtr make_vulkan_mesh(Memory<Point, RAM>& vertices_ram, Memory<Face, RA
 
 VulkanMeshPtr make_vulkan_mesh(const aiMesh* amesh)
 {
+    validate_triangle_mesh(amesh, "Vulkan");
     VulkanMeshPtr ret = std::make_shared<VulkanMesh>();
 
     const aiVector3D* ai_vertices = amesh->mVertices;

@@ -50,7 +50,7 @@
 
 namespace rmagine
 {
-
+inline constexpr unsigned int RMAGINE_ASSIMP_IMPORT_FLAGS = aiProcess_Triangulate | aiProcess_SortByPType | aiProcess_ValidateDataStructure;
 /**
  * @brief Mixture of assimp Importer and assimp Exporter 
  *  enriched by own default settings

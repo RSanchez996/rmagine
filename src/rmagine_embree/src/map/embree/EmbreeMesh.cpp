@@ -13,6 +13,7 @@
 
 #include <embree4/rtcore.h>
 #include <rmagine/math/assimp_conversions.h>
+#include <rmagine/util/assimp/helper.h>
 
 
 
@@ -195,6 +196,7 @@ void EmbreeMesh::init(
 void EmbreeMesh::init(
     const aiMesh* amesh)
 {
+    validate_triangle_mesh(amesh, "Embree");
     init(amesh->mNumVertices, amesh->mNumFaces);
 
     name = amesh->mName.C_Str();

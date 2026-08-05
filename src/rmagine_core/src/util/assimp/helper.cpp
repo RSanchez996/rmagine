@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <algorithm>
+#include <cmath>
+#include <stdexcept>
 
 namespace rmagine
 {
@@ -20,6 +22,63 @@ void get_nodes_with_meshes(const aiNode* node, std::vector<const aiNode*>& mesh_
         for(size_t i=0; i<node->mNumChildren; i++)
         {
             get_nodes_with_meshes(node->mChildren[i], mesh_nodes);
+        }
+    }
+}
+
+void validate_triangle_mesh(
+    const aiMesh* mesh,
+    const std::string& backend)
+{
+    if(mesh == nullptr)
+    {
+        throw std::runtime_error(
+            "[RMagine][" + backend + "] Null aiMesh");
+    }
+
+    if(!mesh->HasPositions())
+    {
+        throw std::runtime_error(
+            "[RMagine][" + backend + "] Mesh has no vertices");
+    }
+
+    for(unsigned int i = 0; i < mesh->mNumVertices; ++i)
+    {
+        const aiVector3D& v = mesh->mVertices[i];
+
+        if(!std::isfinite(v.x) ||
+           !std::isfinite(v.y) ||
+           !std::isfinite(v.z))
+        {
+            throw std::runtime_error(
+                "[RMagine][" + backend +
+                "] Non-finite vertex " + std::to_string(i));
+        }
+    }
+
+    for(unsigned int i = 0; i < mesh->mNumFaces; ++i)
+    {
+        const aiFace& face = mesh->mFaces[i];
+
+        if(face.mNumIndices != 3)
+        {
+            throw std::runtime_error(
+                "[RMagine][" + backend + "] Face " +
+                std::to_string(i) + " has " +
+                std::to_string(face.mNumIndices) +
+                " indices; expected 3");
+        }
+
+        for(unsigned int j = 0; j < 3; ++j)
+        {
+            if(face.mIndices[j] >= mesh->mNumVertices)
+            {
+                throw std::runtime_error(
+                    "[RMagine][" + backend + "] Face " +
+                    std::to_string(i) +
+                    " contains out-of-range vertex index " +
+                    std::to_string(face.mIndices[j]));
+            }
         }
     }
 }

@@ -18,6 +18,7 @@
 #include <cuda_runtime.h>
 
 #include <rmagine/util/prints.h>
+#include <rmagine/util/assimp/helper.h>
 
 namespace rmagine
 {
@@ -108,6 +109,7 @@ OptixMeshPtr make_optix_mesh(
     const aiMesh* amesh,
     OptixContextPtr context)
 {
+    validate_triangle_mesh(amesh, "OptiX");
     OptixMeshPtr ret = std::make_shared<OptixMesh>(context);
 
     const aiVector3D* ai_vertices = amesh->mVertices;
