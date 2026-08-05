@@ -88,7 +88,19 @@ make install
 Download this library and place it into the `src` folder of your ROS workspace.
 
 ```bash
-colcon build
+colcon build \
+  --symlink-install \
+  --packages-select rmagine \
+  --cmake-clean-cache \
+  --cmake-args \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_CUDA_ARCHITECTURES=87 \
+    -DRMAGINE_CUDA_DISABLE=OFF \
+    -DRMAGINE_VULKAN_DISABLE=OFF \
+    -DRMAGINE_VULKAN_CUDA_INTEROP_DISABLE=OFF \
+    -DRMAGINE_OPTIX_DISABLE=ON \
+    -DRMAGINE_BUILD_TESTS=OFF \
+    -DRMAGINE_BUILD_EXAMPLES=OFF
 ```
 
 </details>
